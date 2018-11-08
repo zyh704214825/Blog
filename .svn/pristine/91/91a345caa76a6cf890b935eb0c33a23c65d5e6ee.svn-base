@@ -1,0 +1,16 @@
+package com.ambow.service;
+
+import java.util.List;
+import com.ambow.javabean.Blogarticles;
+
+
+public interface BlogarticlesService {
+	public List<Blogarticles> getAllBlogarticles(String keyword);
+	public Blogarticles getFireBlogarticle();
+	public List<Blogarticles> getBlogByType(int typeId);
+	public List<Blogarticles> getBlogByComm();
+	public Blogarticles getBlogDetail(int blog_id);
+	public int addBlog(Blogarticles blog);
+	public List<Blogarticles> blogList(Blogarticles blog);
+	public int getPageCnt(Blogarticles blog);
+}

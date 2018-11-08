@@ -1,0 +1,15 @@
+package com.ambow.dao;
+
+import java.util.List;
+
+import com.ambow.javabean.Comment;
+
+public interface CommentMapper {
+	int insertComment(Comment comm);
+	int updateComment(Comment comm);
+	int deleteComment(int comm_id);
+	int deleteCommentByBlogId(int blog_id);
+	Comment findCommentById(int comm_id);
+	List<Comment> findCommentByBlogId(int comm_blog);
+	List<Comment> findAllComment();
+}

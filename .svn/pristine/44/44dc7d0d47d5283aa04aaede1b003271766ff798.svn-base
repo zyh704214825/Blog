@@ -1,0 +1,12 @@
+package com.ambow.service;
+
+import java.util.List;
+
+import com.ambow.javabean.Classify;
+
+public interface ClassifyService {
+	public List<Classify> getAllClassify();
+	public Classify getOneClassify(int cls_id);
+	public List<Classify> clsList(Classify cls);
+	public int getPageCnt(Classify cls);
+}

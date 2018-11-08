@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>表格</title>
+    <link rel="stylesheet" href="../frame/layui/css/layui.css">
+    <link rel="stylesheet" href="../frame/static/css/style.css">
+    <link rel="icon" href="../frame/static/image/code.png">
+    <script src="../js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript">
+    	function conPage(id){
+    		var control = id;
+    		var searchCon = $("#searchCon").val();
+    		var pageNow = $("#pageNow").val();
+    		//var beginPageCnt = $("#beginPageCnt").val();
+    		var pageCnt = $("#pageCnt").val();
+    		if(control==1){
+    			if(pageNow==1){
+    				alert("当前已是第一页");
+    				return;
+    			}
+    			pageNow=1;
+    		}else if(control==2){
+    			if(pageNow==1){
+    				alert("当前已是第一页");
+    				return;
+    			}
+    			pageNow=parseInt(pageNow)-1;
+    		}else if(control==3){
+    			if(pageNow==pageCnt){
+    				alert("当前已是最后一页");
+    				return;
+    			}
+    			pageNow=parseInt(pageNow)+1;
+    		}else{
+    			if(pageNow==pageCnt){
+    				alert("当前已是最后一页");
+    				return;
+    			}
+    			pageNow=pageCnt;
+    		}
+    		//console.log(searchCon+pageNow+pageCnt);
+    		//文章分页
+			$.ajax({
+			type:"POST",
+			url:"blogListPage",
+			dataType:"json",
+			data:{searchCon:searchCon,pageNow:pageNow,pageCnt:pageCnt},
+			//async:false,
+			success:function(data){
+				var list=data; 
+				var row="";
+				for(var v in list){
+					var date = new Date(list[v].blog_date);
+					var dd = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+					row=row+"<tr align='center'>"
+			        +"<td>"+list[v].blog_name+"</td>"
+			        +"<td>"+list[v].blog_users.users_name+"</td>"
+			        +"<td>"+dd+"</td>"
+			        +"<td>"+list[v].blog_cls.cls_name+"</td>"
+			        +"<td>"+list[v].comm_count+"</td>"
+			        +"<td>修改</td>"
+			        +"<td>删除</td>"
+			   		+"</tr>"
+			 	}
+			 	console.log(list[0].pageNow);
+			 	$("#tbody").html(row);
+			 	$("#pageNow").val(list[0].pageNow);
+			 	$("#pageCnt").val(list[0].pageCnt);
+			 	$("#searchCon").val(list[0].searchCon);
+			},
+			error:function(){
+				alert("方法执行不成功!");
+			}  
+		 	});
+    	}
+    </script>
+</head>
+<body class="body">
+
+	<form action="/blogList" method="post">
+	    <span class="fr">
+	        <span class="layui-form-label">搜索条件：</span>
+	        <div class="layui-input-inline">
+	        	<!-- <input type="hidden" id="searchC" th:value="${searchCon}"> -->
+	            <input type="text" name="searchCon" autocomplete="off" placeholder="请输入搜索条件" class="layui-input" id="searchCon"  th:value="${searchCon}"> 
+	        </div>
+	        <input type="submit" class="layui-btn mgl-20" value="查询">
+	    </span>
+	</form>
+
+	<table class="layui-table" lay-even="" lay-skin="row" align="center">
+	    <!-- <colgroup>
+	        <col width="250">
+	        <col width="120">
+	        <col width="220">
+	        <col width="150">
+	        <col width="120">
+	        <col>
+	    </colgroup> -->
+	    <thead align="center">
+		    <tr align="center">
+		        <td>文章标题</td>
+		        <td>发表用户</td>
+		        <td>发表时间</td>
+		        <td>文章分类</td>
+		        <td>评论数量</td>
+		        <td colspan="2">操作</td>
+		    </tr>
+	    </thead>
+	    <tbody id="tbody">
+		    <tr th:each="blog:${blogList}" align="center">
+		        <td th:text="${blog.blog_name}"></td>
+		        <td th:text="${blog.blog_users.users_name}"></td>
+		        <td th:text="${blog.blog_date}"></td>
+		        <td th:text="${blog.blog_cls.cls_name}"></td>
+		        <td th:text="${blog.comm_count}"></td>
+		        <td>修改</td>
+		        <td>删除</td>
+		    </tr>
+	    </tbody>
+	</table>
+	<!-- <input type="hidden" id="beginPageCnt" th:value="${pageCnt}"> -->
+	<input type="hidden" id="pageNow" value="1">
+	<input type="hidden" id="pageCnt" th:value="${pageCnt}">
+	<div style="margin: 0 auto; width:300px;height: 100px">
+		<a class="layui-btn layui-btn-small" id="1" onclick="conPage(id)">首页</a>	
+		<a class="layui-btn layui-btn-small" id="2" onclick="conPage(id)"><i class="layui-icon">&#xe603;</i></a>
+		<a class="layui-btn layui-btn-small" id="3" onclick="conPage(id)"><i class="layui-icon">&#xe602;</i></a>
+		<a class="layui-btn layui-btn-small" id="4" onclick="conPage(id)">尾页</a>
+	</div>
+<script type="text/javascript" src="../frame/layui/layui.js"></script>
+<script type="text/javascript">
+    // you code ...
+
+
+</script>
+</body>
+</html>

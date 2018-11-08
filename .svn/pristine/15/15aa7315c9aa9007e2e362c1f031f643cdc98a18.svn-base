@@ -1,0 +1,44 @@
+package com.ambow.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ambow.javabean.Classify;
+import com.ambow.service.ClassifyService;
+
+//@RestController
+@Controller
+public class ClassifyController {
+	@Autowired
+	private ClassifyService classifyService;
+	
+	//遍历所有分类
+	@RequestMapping("/getAllClassify")
+	@ResponseBody
+	public List<Classify> getAllClassify(){
+		List<Classify> classifyList = classifyService.getAllClassify();
+		return classifyList;
+	}
+	
+	//前台首页入口
+	@RequestMapping("/test1")
+	public String test1(Model model){
+		List<Classify> classifyList = classifyService.getAllClassify();
+		model.addAttribute("classifyList", classifyList);
+		return "index";
+	}
+	
+	//后台首页入口
+	@RequestMapping("/admin")
+	public String admin(Model model){
+		return "adminindex";
+	}
+	
+	
+}

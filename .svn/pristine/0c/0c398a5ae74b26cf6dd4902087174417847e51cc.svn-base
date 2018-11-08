@@ -1,0 +1,227 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Create Account</title>
+	<meta name="keywords" content="" />
+	<meta name="description" content="" />
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript" th:src="@{/js/jquery-1.11.1.min.js}"></script>
+	<script th:src="@{/js/jquery-2.1.4.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+	<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+	<link href="css/templatemo_style.css" rel="stylesheet" type="text/css">	
+	<script type="text/javascript">
+	var countdown = 60;
+	$(function(){
+	alert(123);
+		$("#sub").click(function(){
+			var tel=$("#tel").val();
+			var cardid=$("#users_cardid").val()
+			var str= /^1[34578]\d{9}$/;
+			var str1=/^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
+			if(str.test(tel)==false){
+				$("#phone").text("请输入正确的手机号码");
+				return false;
+			}else{
+				$("#phone").text("");
+			}
+			if($("#ver").val()==null||$("#ver").val()==""){
+				$("#phonemsg").text("请先获取验证码");
+				return false;
+			}else{
+				$("#phonemsg").text("");
+			}
+			if($("#users_phonemsg").val()==null||$("#users_phonemsg").val()==""){
+				$("#phonemsg").text("请输入验证码");
+				return false;
+			}else{
+				$("#phonemsg").text("");
+			}
+			if($("#users_phonemsg").val()!=$("#ver").val()){
+				$("#phonemsg").text("验证码错误");
+				return false;
+			}else{
+				$("#phonemsg").text("");
+			}
+			if($("#users_pswd").val()!=$("#rePswd").val()){
+				$("#repswd").text("两次密码不一致");
+				return false;
+			}else{
+				$("#repswd").text("");
+			}
+			if($("#users_pswd").val()==null||$("#users_pswd").val()==""){
+				$("#pswd").text("请输入密码");
+				return false;
+			}else{
+				$("#pswd").text("");
+			}
+			if($("#rePswd").val()==null||$("#rePswd").val()==""){
+				$("#repswd").text("请重复输入密码");
+				return false;
+			}else{
+				$("#repswd").text("");
+			}
+			if($("#users_name").val()==null||$("#users_name").val()==""){
+				$("#name").text("请输入名字");
+				return false;
+			}else{
+				$("#name").text("");
+			}
+			if($("#users_cardid").val()==null||$("#users_cardid").val()==""||str1.test(cardid)==false){
+				$("#cardid").text("请输入正确身份证号码");
+				return false;
+			}else{
+				$("#cardid").text("");
+			}
+			if($("#users_no").val()==null||$("#users_no").val()==""){
+				$("#no").text("请输入账号");
+				return false;
+			}else{
+				$("#no").text("");
+			}
+			return true;
+		});
+	});
+	function isNull(val){
+		var tel=$("#tel").val();
+		var str=/^1[34578]\d{9}$/;
+		if(str.test(tel)==true){
+			ajax(val);
+			return;
+		}
+		$("#fonts").text("请输入正确的手机号码");
+	}
+	function settime(val) {
+		if (countdown == 0) {
+			val.removeAttribute("disabled");
+			val.value = "免费获取验证码";
+			countdown = 60;
+		} else {
+			val.setAttribute("disabled", true);
+			val.value = "重新发送(" + countdown + ")";
+			countdown--;
+		}
+		setTimeout(function() {
+			settime(val);
+		}, 1000);
+	}
+	function ajax(val){
+		var tel=$("#tel").val();
+		settime(val);
+		$.ajax({
+			dataType : 'json',
+			url : 'phoneMsg',
+			data:{
+				tel:tel
+			},
+			success : function(msg) {
+				var v = JSON.parse(msg);
+				$("#ver").val(v);
+			},
+			error : function() {
+				alert("查询失败");
+			}
+		});
+	}
+	</script>
+</head>
+<body class="templatemo-bg-gray">
+	<h1 class="margin-bottom-15">账号 注册</h1>
+	<div class="container">
+		<div class="col-md-12">			
+			<form class="form-horizontal templatemo-create-account templatemo-container" role="form" action="createUsers" method="post">
+				<div class="form-inner">
+					<div class="form-group">
+			          <div class="col-md-6">		          	
+			            <label for="first_name" class="control-label">姓名</label>
+			            <input th:value="${users?.users_name}" type="text" name="users_name" class="form-control" id="users_name" placeholder="">		            		            		            
+			            <span id="name" style="color:red;"></span>            		            		            
+			          </div>  
+			          <div class="col-md-6">		          	
+			            <label for="last_name" class="control-label">身份证号</label>
+			            <input th:value="${users?.users_cardid}" type="text" name="users_cardid" class="form-control" id="users_cardid" placeholder="">		            		            		            
+			          	<span id="cardid" style="color:red;"></span>
+			          </div>             
+			        </div>
+			        <div class="form-group">
+			          <div class="col-md-6">		          	
+			            <label for="username" class="control-label">电话号码</label>
+			            <input th:value="${users?.users_phone}" type="text" name="users_phone" class="form-control" id="tel" placeholder="">		            		            		            
+			          	<span id="phone" style="color:red;"></span>
+			          </div>              
+			          <div class="col-md-4">		          	
+			            <label for="username" class="control-label">验证码</label>
+			            <input type="text" name="phonemsg" class="form-control" id="users_phonemsg" placeholder="" style="width:100%;">		            		            		           
+			            <input type="hidden" class="form-control" id="ver">
+			            <span id="phonemsg" style="color:red;"></span>		            		            		           
+			          </div>              
+			          <div class="col-md-2">		          	
+			            <label for="username" class="control-label">&nbsp;</label>
+			            <input type="button" onclick="isNull(this)" value="获取验证码" class="btn btn-info" placeholder="">		            		            		            
+			          </div>              
+			        </div>			
+			        <div class="form-group">
+			          <div class="col-md-6">		          	
+			            <label for="username" class="control-label">账号</label>
+			            <input th:value="${users?.users_no}" type="text" name="users_no" class="form-control" id="users_no" placeholder="">		            		            		            
+			          	<span id="no" style="color:red;"></span>
+			          </div>
+			          <div class="col-md-6 templatemo-radio-group">
+			          	<label class="radio-inline">
+		          			<input type="radio" id="users_age" name="users_age" id="optionsRadios1" value="1" checked="checked"> 男
+		          		</label>
+		          		<label class="radio-inline">
+		          			<input type="radio" id="users_age" name="users_age" id="optionsRadios2" value="2"> 女
+		          		</label>
+			          </div>             
+			        </div>
+			        <div class="form-group">
+			          <div class="col-md-6">
+			            <label for="password" class="control-label">密码</label>
+			            <input th:value="${users?.users_pswd}" type="password" name="users_pswd" class="form-control" id="users_pswd" placeholder="">
+			          	<span id="pswd" style="color:red;"></span>
+			          </div>
+			          <div class="col-md-6">
+			            <label for="password" class="control-label">重复密码</label>
+			            <input th:value="${rePswd}? ${rePswd}" type="password" name="rePswd" class="form-control" id="rePswd" placeholder="">
+			          	<span id="repswd" style="color:red;"></span>
+			          </div>
+			        </div>
+<!-- 			        <div class="form-group"> -->
+<!-- 			          <div class="col-md-12"> -->
+<!-- 			            <label><input type="checkbox">I agree to the <a href="javascript:;" data-toggle="modal" data-target="#templatemo_modal">Terms of Service</a> and <a href="#">Privacy Policy.</a></label> -->
+<!-- 			          </div> -->
+<!-- 			        </div> -->
+			        <div class="form-group">
+			          <div class="col-md-12">
+			            <input type="submit" id="sub" value="注册" class="btn btn-info">
+			            <span th:text="${createMsg}? ${createMsg}" style="color:red;"></span>
+			            <a href="login-1.html" class="pull-right">登录</a>
+			          </div>
+			        </div>	
+				</div>				    	
+		      </form>		      
+		</div>
+	</div>
+	<!-- Modal -->
+	<div class="modal fade" id="templatemo_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	        <h4 class="modal-title" id="myModalLabel">Terms of Service</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<p>This form is provided by <a rel="nofollow" href="http://www.cssmoban.com/page/1">Free HTML5 Templates</a> that can be used for your websites. Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+	        <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p>
+	        <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+</body>
+</html>

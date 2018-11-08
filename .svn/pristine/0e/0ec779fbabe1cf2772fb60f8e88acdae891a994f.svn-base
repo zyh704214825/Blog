@@ -1,0 +1,340 @@
+package com.ambow.controller;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.aliyuncs.exceptions.ClientException;
+import com.ambow.javabean.Users;
+import com.ambow.service.UsersService;
+
+@Controller
+public class UsersController {
+	SmsDemo sd=new SmsDemo();
+	@Autowired
+	private UsersService usersService;
+	
+	/*
+	 * 后台方法
+	 * 
+	 */
+	/*@RequestMapping("/createAccount")
+	public String createAdmin(){
+		return "create-account";
+	}*/
+	//后台
+	@RequestMapping("/updateAdminPswd")
+	public String updateAdminPswd(){
+		return "demo/adminPswd";
+	}
+	@RequestMapping("/usersList")
+	public String usersList(){
+		return "demo/usersList";
+	}
+	@RequestMapping("/updateAdminPswdReal")
+	public String updateAdminPswdReal(String users_pswd,String new_pswd,String renew_pswd,HttpServletRequest req,Model model){
+		Users users=(Users) req.getSession().getAttribute("loginAdmin");
+		if(users_pswd==null||users_pswd.equals("")){
+			return "demo/adminPswd";
+		}
+		if(new_pswd==null||renew_pswd==null||(!renew_pswd.equals(new_pswd))){
+			model.addAttribute("updatePswdMsg", "新密码不相等或为空");
+			return "demo/adminPswd";
+		}
+		if(!users_pswd.equals(users.getUsers_pswd())){
+			model.addAttribute("updatePswdMsg", "旧密码不正确");
+			return "demo/adminPswd";
+		}
+		users.setUsers_pswd(new_pswd);
+		usersService.updateUsers(users);
+		req.getSession().removeAttribute("loginAdmin");
+		return "demo/login";
+	}
+	@RequestMapping("/adminLog")
+	public String adminLog(){
+		return "demo/login";
+	}
+	@RequestMapping("/selectAdmin")
+	public String selectAdmin(HttpServletRequest req,Model model){
+		Users users=(Users) req.getSession().getAttribute("loginAdmin");
+		if(users==null){
+			model.addAttribute("loginMsg", "请先登录再操作");
+			return "demo/login";
+		}
+		users=usersService.findUsersById(users.getUsers_id());
+		model.addAttribute("users", users);
+		return "demo/selectAdmin";
+	}
+	@RequestMapping("/updateAdminReal")
+	public String updateAdminReal(Users users,HttpServletRequest req,Model model){
+		System.out.println(users);
+		if(users==null){
+			return "demo/selectAdmin";
+		}
+		if((!users.getUsers_phone().equals(""))&&usersService.findUsersByPhoneOnly(users)!=null){
+			model.addAttribute("updateAdminMsg", "手机号码已存在");
+			return "demo/selectAdmin";
+		}
+		req.getSession().setAttribute("loginAdmin", users);
+		usersService.updateUsers(users);
+		return "demo/tips";
+	}
+	@RequestMapping("/frogotAdmin")
+	public String frogotAdmin(){
+		return "demo/login2";
+	}
+	//后台账号登录
+	@RequestMapping("/loginAdmin")
+	public String loginAdmin(Users users,HttpServletRequest req,Model model){
+		if(users==null||users.getUsers_no()==null||users.getUsers_pswd()==null){
+			model.addAttribute("loginMsg", "密码或账号不能为空!");
+			return "demo/login";
+		}
+		users=usersService.findUsersByNoPswd(users);
+		if(users==null){
+			model.addAttribute("loginMsg", "密码或账号输入错误!");
+			return "demo/login";
+		}
+		if(users.getUsers_state()==0){
+			model.addAttribute("loginMsg", "密码或账号输入错误!");
+			return "demo/login";
+		}
+		req.getSession().setAttribute("loginAdmin", users);
+		model.addAttribute("loginMsg", "");
+		return "adminindex";
+	}
+	//后台手机号码登录
+	@RequestMapping("/phoneAdmin")
+	public String phoneAdmin(Users users,HttpServletRequest req,Model model){
+		if(users==null){
+			model.addAttribute("forgotMsg", "请输入手机号码!");
+			return "demo/login2";
+		}
+		users=usersService.findUsersByPhone(users);
+		if(users==null){
+			model.addAttribute("forgotMsg", "手机号不存在!");
+			return "demo/login2";
+		}
+		if(users.getUsers_state()==0){
+			model.addAttribute("forgotMsg", "手机号输入错误!");
+			return "demo/login2";
+		}
+		req.getSession().setAttribute("loginAdmin", users);
+		model.addAttribute("forgotMsg", "");
+		return "adminindex";
+	}
+		
+	//前台退出登录
+	@RequestMapping("/logoutAdmin")
+	public String logoutAdmin(HttpServletRequest req){
+		req.getSession().removeAttribute("loginAdmin");
+		return "demo/login";
+	}
+		
+	/*
+	 * 前台方法
+	 * 
+	 * 
+	 * */
+		
+	//登录页面
+	@RequestMapping("/loginHtml")
+	public String loginHtml(){
+		return "login-1";
+	}
+	@RequestMapping("/createAccount")
+	public String createAccount(){
+		return "create-account";
+	}
+	@RequestMapping("/frogotPassword")
+	public String frogotPassword(){
+		return "forgot-password";
+	}
+	@RequestMapping("/updatePswdReal")
+	public String updatePswdReal(String users_pswd,String new_pswd,String renew_pswd,HttpServletRequest req,Model model){
+		Users users=(Users) req.getSession().getAttribute("loginUsers");
+		if(users_pswd==null||users_pswd.equals("")){
+			return "updatePswd";
+		}
+		if(new_pswd==null||renew_pswd==null||(!renew_pswd.equals(new_pswd))){
+			model.addAttribute("updatePswdMsg", "新密码不相等或为空");
+			return "updatePswd";
+		}
+		if(!users_pswd.equals(users.getUsers_pswd())){
+			model.addAttribute("updatePswdMsg", "旧密码不正确");
+			return "updatePswd";
+		}
+		users.setUsers_pswd(new_pswd);
+		usersService.updateUsers(users);
+		req.getSession().removeAttribute("loginUsers");
+		return "index";
+	}
+	@RequestMapping("/updatePswd")
+	public String updatePswd(){
+		return "updatePswd";
+	}
+	@RequestMapping("/updateUsers")
+	public String updateUsers(HttpServletRequest req,Model model){
+		Users users=(Users) req.getSession().getAttribute("loginUsers");
+		if(users==null){
+			model.addAttribute("loginMsg", "请先登录再操作");
+			return "login";
+		}
+		users=usersService.findUsersById(users.getUsers_id());
+		model.addAttribute("users", users);
+		return "updateUsers";
+	}
+	@RequestMapping("/updateUsersReal")
+	public String updateUsersReal(Users users,HttpServletRequest req,Model model){
+		System.out.println(users);
+		if(users==null){
+			return "updateUsers";
+		}
+		if((!users.getUsers_phone().equals(""))&&usersService.findUsersByPhoneOnly(users)!=null){
+			model.addAttribute("updateUsersMsg", "手机号码已存在");
+			return "updateUsers";
+		}
+		req.getSession().setAttribute("loginUsers", users);
+		usersService.updateUsers(users);
+		return "index";
+	}
+	//前台查看用户
+	@RequestMapping("/selectUsers")
+	public String selectUsers(HttpServletRequest req,Model model){
+		Users users=(Users) req.getSession().getAttribute("loginUsers");
+		users=usersService.findUsersById(users.getUsers_id());
+		model.addAttribute("users", users);
+		return "selectUsers";
+	}
+	
+	
+	
+	//Ajax异步发送验证码
+	@RequestMapping("/phoneMsg")
+	@ResponseBody
+	public String phoneMsg(String tel){
+		if(tel==null||tel.equals("")){
+			return "false";
+		}
+		String msg="";
+		//try {
+			//msg=sd.smsTest(tel);
+			msg="123456";
+		/*} catch (ClientException | InterruptedException e) {
+			e.printStackTrace();
+		}*/
+		return msg;
+	}
+	
+	//Ajax查询手机号码是否存在
+	@RequestMapping("/phoneOnly")
+	@ResponseBody
+	public Integer phoneOnly(String tel){
+		if(tel==null||tel.equals("")){
+			return 1;
+		}
+		Users users = new Users();
+		users.setUsers_phone(tel);
+		if(usersService.findUsersByPhone(users)==null){
+			return 2;
+		}
+		return 0;
+	}
+	
+	//Ajax判断是否登录
+	@RequestMapping("/loginEmpty")
+	@ResponseBody
+	public Users loginEmpty(HttpServletRequest req){
+		Users users=(Users) req.getSession().getAttribute("loginUsers");
+		if(users==null){
+			return null;
+		}
+		return users;
+	}
+	
+	//前台账号登录
+	@RequestMapping("/loginUsers")
+	public String loginUsers(Users users,HttpServletRequest req,Model model){
+		if(users==null||users.getUsers_no()==null||users.getUsers_pswd()==null){
+			model.addAttribute("loginMsg", "密码或账号不能为空!");
+			return "login-1";
+		}
+		users=usersService.findUsersByNoPswd(users);
+		if(users==null){
+			model.addAttribute("loginMsg", "密码或账号输入错误!");
+			return "login-1";
+		}
+		if(users.getUsers_state()==1){
+			model.addAttribute("loginMsg", "密码或账号输入错误!");
+			return "login-1";
+		}
+		req.getSession().setAttribute("loginUsers", users);
+		model.addAttribute("loginMsg", "");
+		return "index";
+	}
+	
+	
+	
+	
+	//前台用户注册
+	@RequestMapping("/createUsers")
+	public String createUsers(Users users,String rePswd,HttpServletRequest req,Model model){
+		if(users==null||users.getUsers_no()==null||users.getUsers_pswd()==null){
+			model.addAttribute("users", users);
+			model.addAttribute("rePswd", rePswd);
+			model.addAttribute("createMsg", "密码或账号不能为空!");
+			return "create-account";
+		}
+		if(usersService.findUsersByNo(users)!=null){
+			model.addAttribute("users", users);
+			model.addAttribute("rePswd", rePswd);
+			model.addAttribute("createMsg", "账号已经存在!");
+			return "create-account";
+		}
+		if(usersService.findUsersByPhone(users)!=null){
+			model.addAttribute("users", users);
+			model.addAttribute("rePswd", rePswd);
+			model.addAttribute("createMsg", "手机号码已经存在!");
+			return "create-account";
+		}
+		users.setUsers_state(0);
+		usersService.insertUsers(users);
+		model.addAttribute("createMsg", "注册成功");
+		return "login-1";
+	}
+	
+	//前台手机号码登录
+	@RequestMapping("/phoneLogin")
+	public String phoneLogin(Users users,HttpServletRequest req,Model model){
+		if(users==null){
+			model.addAttribute("forgotMsg", "请输入手机号码!");
+			return "forgot-password";
+		}
+		users=usersService.findUsersByPhone(users);
+		if(users==null){
+			model.addAttribute("forgotMsg", "手机号不存在!");
+			return "forgot-password";
+		}
+		if(users.getUsers_state()==1){
+			model.addAttribute("forgotMsg", "手机号输入错误!");
+			return "forgot-password";
+		}
+		req.getSession().setAttribute("loginUsers", users);
+		model.addAttribute("forgotMsg", "登录成功");
+		return "index";
+	}
+	
+	
+	
+	//前台退出登录
+	@RequestMapping("/logoutUsers")
+	public String logoutUsers(HttpServletRequest req){
+		req.getSession().removeAttribute("loginUsers");
+		return "index";
+	}
+	
+}

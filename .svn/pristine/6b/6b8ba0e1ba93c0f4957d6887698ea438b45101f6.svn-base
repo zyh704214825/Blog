@@ -1,0 +1,59 @@
+package com.ambow.javabean;
+
+import java.util.Date;
+
+public class Comment {
+	private int comm_id;
+	private Users comm_users;
+	private String comm_remark;
+	private Blogarticles comm_blog;
+	private Date comm_date;
+	public int getComm_id() {
+		return comm_id;
+	}
+	public void setComm_id(int comm_id) {
+		this.comm_id = comm_id;
+	}
+	public Users getComm_users() {
+		return comm_users;
+	}
+	public void setComm_users(Users comm_users) {
+		this.comm_users = comm_users;
+	}
+	public String getComm_remark() {
+		return comm_remark;
+	}
+	public void setComm_remark(String comm_remark) {
+		this.comm_remark = comm_remark;
+	}
+	public Blogarticles getComm_blog() {
+		return comm_blog;
+	}
+	public void setComm_blog(Blogarticles comm_blog) {
+		this.comm_blog = comm_blog;
+	}
+	public Date getComm_date() {
+		return comm_date;
+	}
+	public void setComm_date(Date comm_date) {
+		this.comm_date = comm_date;
+	}
+	@Override
+	public String toString() {
+		return "Comment [comm_id=" + comm_id + ", comm_users=" + comm_users
+				+ ", comm_remark=" + comm_remark + ", comm_blog=" + comm_blog
+				+ ", comm_date=" + comm_date + "]";
+	}
+	public Comment(Users comm_users, String comm_remark,
+			Blogarticles comm_blog, Date comm_date) {
+		super();
+		this.comm_users = comm_users;
+		this.comm_remark = comm_remark;
+		this.comm_blog = comm_blog;
+		this.comm_date = comm_date;
+	}
+	public Comment() {
+		super();
+	}
+	
+}

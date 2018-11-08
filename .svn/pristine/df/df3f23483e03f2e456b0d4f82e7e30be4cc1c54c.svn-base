@@ -1,0 +1,106 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.ambow.dao.BlogarticlesMapper">
+  	<!-- 查询符合查询条件的记录共有多少条 -->
+    <select id="getPageCnt" parameterType="com.ambow.javabean.Blogarticles" resultType="java.lang.Integer" >
+	    select count(*) from blogarticles where blog_name like '%${searchCon}%'
+    </select>
+  
+  	<!-- 前台首页遍历所有博客 -->
+  	<select id="getAllBlogarticles" parameterType="java.lang.String"
+         resultMap="blogType">
+         select * from blogarticles b 
+         	join classify c on b.blog_cls=c.cls_id 
+         	join users u on u.users_id=b.blog_users 
+         where blog_name like '%${keyword}%' order by blog_id DESC
+    </select>
+    
+    <!-- 前台首页查看推荐博客 -->
+  	<select id="getFireBlogarticle"
+         resultType="com.ambow.javabean.Blogarticles">
+         select * from blogarticles b join classify c on b.blog_cls=c.cls_id 
+         	join users u on u.users_id=b.blog_users where blog_id=
+         	(select comm_blog from comment GROUP BY comm_blog order by count(comm_blog) DESC limit 1)
+    </select>
+     
+    <!-- 前台首根据类型遍历博客 -->
+    <select id="getBlogByType"  parameterType="java.lang.Integer"
+         resultMap="blogType">
+         select * from blogarticles b 
+         	join classify c on b.blog_cls=c.cls_id 
+         	join users u on u.users_id=b.blog_users 
+         where blog_cls=#{typeId}
+    </select>
+    
+    <!-- 前台首根据评论热度遍历博客 -->
+    <select id="getBlogByComm" resultMap="blogType">
+         select * from blogarticles b 
+         	join classify cc on b.blog_cls=cc.cls_id 
+         	join users u on u.users_id=b.blog_users 
+         	join `comment` c on b.blog_id=c.comm_blog 
+         GROUP BY c.comm_blog order by c.comm_id desc limit 10 
+    </select>
+    
+    <!-- 前台根据博文id查看博文 -->
+    <select id="getBlogDetail"  parameterType="java.lang.Integer" resultMap="blogType">
+    	select * from blogarticles b 
+    		join classify c on b.blog_cls=c.cls_id 
+    		join users u on u.users_id=b.blog_users 
+    	where blog_id = #{blog_id}
+    </select>
+    
+    <!-- 新增文章 -->
+    <insert id="addBlog" parameterType="com.ambow.javabean.Blogarticles">
+     	<selectKey keyProperty="blog_id" order="AFTER" resultType="java.lang.Integer">
+     		select last_insert_id()
+     	</selectKey>
+     		insert into blogarticles(blog_name,blog_remark,blog_users,blog_date,blog_memo,blog_cls,comm_count) 
+     			values(#{blog_name},#{blog_remark},#{blog_users.users_id},#{blog_date},#{blog_memo},#{blog_cls.cls_id},#{comm_count})
+     					
+    </insert>
+    
+    <!-- 后台遍历博客 -->
+  	<select id="blogList" parameterType="com.ambow.javabean.Blogarticles"
+         resultMap="blogType">
+         select * from blogarticles b 
+         	join classify c on b.blog_cls=c.cls_id 
+         	join users u on u.users_id=b.blog_users 
+         where blog_name like '%${searchCon}%' order by blog_id DESC limit #{beginRec},#{pageSize}
+    </select>
+    
+    <!-- 根据文章id删除文章 -->
+    <delete id="deleteBlog" parameterType="com.ambow.javabean.Blogarticles">
+    	delete from blogarticles where blog_id=#{blog_id}
+    </delete>
+    
+    <!-- 根据类型删除文章 -->
+    <delete id="deleteBlogByCls" parameterType="com.ambow.javabean.Classify">
+    	delete from blogarticles where blog_cls=#{cls_id}
+    </delete>
+    
+    <!-- 所有博客   类型、用户 -->
+    <resultMap type="com.ambow.javabean.Blogarticles" id="blogType">
+  	  	<id property="blog_id" column="blog_id"></id>
+  	  	<result property="comm_count" column="comm_count"></result>
+  	  	<result property="blog_name" column="blog_name"></result>
+  	  	<result property="blog_remark" column="blog_remark"></result>
+  	  	<result property="blog_date" column="blog_date"></result>
+  	  	<result property="blog_memo" column="blog_memo"></result>
+  	  	<association property="blog_users" javaType="com.ambow.javabean.Users">
+  	  		<id property="users_id" column="users_id"></id>
+  	  		<result property="users_no" column="users_no"></result>
+  	  		<result property="users_name" column="users_name"></result>
+  	  		<result property="users_pswd" column="users_pswd"></result>
+  	  		<result property="users_age" column="users_age"></result>
+  	  		<result property="users_phone" column="users_phone"></result>
+  	  		<result property="users_cardid" column="users_cardid"></result>
+  	  		<result property="users_state" column="users_state"></result>
+  	  	</association>
+  	  	<association property="blog_cls" javaType="com.ambow.javabean.Classify">
+  	  		<id property="cls_id" column="cls_id"></id>
+  	  		<result property="cls_name" column="cls_name"></result>
+  	  		<result property="cls_remark" column="cls_remark"></result>
+  	  		<result property="cls_memo" column="cls_memo"></result>
+  	  	</association>
+  	</resultMap>
+  </mapper>

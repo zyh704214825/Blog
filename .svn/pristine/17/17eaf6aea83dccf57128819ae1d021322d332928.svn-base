@@ -1,0 +1,88 @@
+package com.ambow.controller;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.ambow.javabean.Blogarticles;
+import com.ambow.javabean.Comment;
+import com.ambow.javabean.Users;
+import com.ambow.service.BlogarticlesService;
+import com.ambow.service.CommentService;
+
+@Controller
+public class CommentController {
+	@Autowired
+	private CommentService commentService;
+	@Autowired
+	private BlogarticlesService blogarticlesService;
+	
+	@RequestMapping("/testComment")
+	public String testComment(){
+		return "index";
+	}
+	@RequestMapping("/commentList")
+	public String commentList(){
+		return "demo/commentList";
+	}
+	@RequestMapping("/commentDelete")
+	public String commentDelete(int comm_id){
+		commentService.deleteComment(comm_id);
+		Blogarticles blog = blogarticlesService.getBlogDetail(comm_id);
+		if(blog.getComm_count()>0){
+			blog.setComm_count(blog.getComm_count()-1);
+		}
+		blogarticlesService.updateComm(blog);
+		return "demo/commentList";
+	}
+	@RequestMapping("/selectCommentList")
+	@ResponseBody
+	public Map selectCommentList(Integer pageNow,String searchCon){
+		Comment comm=new Comment();
+		comm.setPageNow(pageNow);
+		comm.setSearchCon(searchCon);
+		List<Comment> list=commentService.findCommentByPage(comm);
+		int cnt=commentService.findCommentByCnt(comm);
+		Map map=new HashMap();
+		map.put("list", list);
+		map.put("cnt", cnt);
+		map.put("now", pageNow);
+		map.put("searchCon", searchCon);
+		return map;
+	}
+	@RequestMapping("/selectAllComment")
+	@ResponseBody
+	public Map selectAllComment(Integer blogId){
+		System.out.println(blogId);
+		List<Comment> list=commentService.findCommentByBlogId(blogId);
+		Map map=new HashMap();
+		map.put("list", list);
+		map.put("size", list.size());
+		return map;
+	}
+	
+	@RequestMapping("/insertComment")
+	public String insertComment(Comment comm,HttpServletRequest req,Model model){
+		//System.out.println(comm.getComm_blog().getBlog_id());
+		//System.out.println(comm.getComm_remark());
+		Blogarticles blog = blogarticlesService.getBlogDetail(comm.getComm_blog().getBlog_id());
+		blog.setComm_count(blog.getComm_count()+1);
+		blogarticlesService.updateComm(blog);
+		Users users=(Users) req.getSession().getAttribute("loginUsers");
+		comm.setComm_users(users);
+		comm.setComm_date(new Date());
+		if(users!=null){
+			commentService.insertComment(comm);
+		}
+		return "redirect:getBlogDetail?blog_id="+comm.getComm_blog().getBlog_id();
+	}
+}

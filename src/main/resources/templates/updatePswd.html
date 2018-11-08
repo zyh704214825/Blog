@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<script th:src="@{/js/jquery-2.1.4.min.js}"></script>
+<script th:src="@{/js/nprogress.js}"></script>
+<script th:src="@{/js/jquery.lazyload.min.js}"></script>
+<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+<link href="css/templatemo_style.css" rel="stylesheet" type="text/css">	
+<link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/css/nprogress.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/css/font-awesome.min.css}">
+<link rel="apple-touch-icon-precomposed" th:href="@{/images/icon.png}">
+<link rel="shortcut icon" th:href="@{/images/favicon.ico}">
+<!--[if gte IE 9]>
+  <script src="js/jquery-1.11.1.min.js" type="text/javascript"></script>
+  <script src="js/html5shiv.min.js" type="text/javascript"></script>
+  <script src="js/respond.min.js" type="text/javascript"></script>
+  <script src="js/selectivizr-min.js" type="text/javascript"></script>
+<![endif]-->
+<!--[if lt IE 9]>
+  <script>window.location.href='upgrade-browser.html';</script>
+<![endif]-->
+<script type="text/javascript">
+	$(function(){
+			$("#sub").click(function(){
+				var tel=$("#tel").val();
+				var cardid=$("#users_cardid").val()
+				var str= /^1[34578]\d{9}$/;
+				var str1=/^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
+				if($("#new_pswd").val()!=$("#renew_pswd").val()){
+					$("#repswd").text("两次密码不一致");
+					return false;
+				}else{
+					$("#repswd").text("");
+				}
+				if($("#new_pswd").val()==null||$("#new_pswd").val()==""){
+					$("#pswd").text("请输入密码");
+					return false;
+				}else{
+					$("#pswd").text("");
+				}
+				if($("#renew_pswd").val()==null||$("#renew_pswd").val()==""){
+					$("#repswd").text("请重复输入密码");
+					return false;
+				}else{
+					$("#repswd").text("");
+				}
+				return true;
+			});
+		});
+</script>
+</head>
+<body class="user-select">
+<header class="header">
+<nav class="navbar navbar-default" id="navbar">
+<div class="container">
+  <div class="header-topbar hidden-xs link-border">
+	<ul class="site-nav topmenu">
+	  <!-- <li><a href="loginHtml" >去登录</a></li> -->
+	  <!-- <li><a href="#" >标签云</a></li>
+	  <li><a href="loginHtml" >标签云</a></li>
+	  <!-- <li><a href="#" >标签云</a></li>
+	   <li><a href="loginHtml" >标签云</a></li>
+		<li><a href="#" rel="nofollow" >读者墙</a></li>
+		<li><a href="#" title="RSS订阅" >
+			<i class="fa fa-rss">
+			</i> RSS订阅	</a></li>
+		</a></li> -->
+	</ul>
+			 勤记录 懂分享</div>
+  <div class="navbar-header">
+	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-navbar" aria-expanded="false"> <span class="sr-only"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+	<h1 class="logo hvr-bounce-in"><a href="#" title="木庄网络博客"><img src="images/201610171329086541.png" alt="木庄网络博客"></a></h1>
+  </div>
+  <div class="collapse navbar-collapse" id="header-navbar">
+	<ul class="nav navbar-nav navbar-right" id="classifyList">
+	<!-- ajax写入分类 -->   
+	</ul>
+  </div>
+</div>
+</nav>
+</header>
+<section class="container">
+<div class="content-wrap">
+<div class="content">
+  <div id="focusslide" class="carousel slide" data-ride="carousel">
+	<ol class="carousel-indicators">
+	  <li data-target="#focusslide" data-slide-to="0" class="active"></li>
+	  <li data-target="#focusslide" data-slide-to="1"></li>
+	</ol>
+</div>
+  <div class="title">
+	<h3>查看个人信息</h3>
+  </div>
+  <div id="BlogList">
+  	<div class="container">
+		<div class="col-md-12">			
+			<form class="form-horizontal templatemo-create-account templatemo-container" role="form" action="updatePswdReal" method="post">
+				<div class="form-inner">
+					<div class="form-group">
+			          <div class="col-md-6">		          	
+			            <label for="first_name" class="control-label">旧密码</label>
+			            <input type="password" name="users_pswd" class="form-control" id="users_name">            		            
+			          	<span id="name" style="color:red;"></span>
+			          </div>  
+			        </div>
+			        <div class="form-group">
+			          <div class="col-md-6">		          	
+			            <label for="username" class="control-label">新密码</label>
+			            <input type="password" name="new_pswd" class="form-control" id="new_pswd">		            		            
+			          	<span id="pswd" style="color:red;"></span>
+			          </div>              
+			        </div>			
+			        <div class="form-group">
+			          <div class="col-md-6">		          	
+			            <label for="username" class="control-label">重复新密码</label>
+			            <input type="password" name="renew_pswd" class="form-control" id="renew_pswd">
+			            <span id="repswd" style="color:red;"></span>         		            		            
+			          </div>
+			        </div>
+<!-- 			        <div class="form-group"> -->
+<!-- 			          <div class="col-md-12"> -->
+<!-- 			            <label><input type="checkbox">I agree to the <a href="javascript:;" data-toggle="modal" data-target="#templatemo_modal">Terms of Service</a> and <a href="#">Privacy Policy.</a></label> -->
+<!-- 			          </div> -->
+<!-- 			        </div> -->
+			        <div class="form-group">
+			          <div class="col-md-12">
+			            <input type="submit" id="sub" value="确认修改" class="btn btn-info">
+			            <a href="selectUsers"><input type="button" id="rollback" value="返回上一页" class="btn btn-error"></a>
+			          	<span th:text="${updatePswdMsg}? ${updatePswdMsg}" style="color:red;"></span>
+			          </div>
+			        </div>	
+				</div>				    	
+		      </form>		      
+		</div>
+	</div>
+	<!-- Modal -->
+	<div class="modal fade" id="templatemo_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	        <h4 class="modal-title" id="myModalLabel">Terms of Service</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<p>This form is provided by <a rel="nofollow" href="http://www.cssmoban.com/page/1">Free HTML5 Templates</a> that can be used for your websites. Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+	        <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p>
+	        <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+  </div>
+  
+</div>
+</div>
+<div class="tlinks">Collect from <a href="http://www.cssmoban.com/" >企业网站模板</a></div>
+<aside class="sidebar">
+<div class="fixed">
+  <div class="widget widget-tabs">
+	<ul class="nav nav-tabs" role="tablist">
+	  <li role="presentation" class="active"><a href="#notice" aria-controls="notice" role="tab" data-toggle="tab" >统计信息</a></li>
+	  <li role="presentation"><a href="#contact" aria-controls="contact" role="tab" data-toggle="tab" >联系站长</a></li>
+	</ul>
+	<div class="tab-content">
+	  <div role="tabpanel" class="tab-pane contact active" id="notice">
+		<h2>日志总数:
+			  888篇
+		  </h2>
+		  <h2>网站运行:
+		  <span id="sitetime">88天 </span></h2>
+	  </div>
+		<div role="tabpanel" class="tab-pane contact" id="contact">
+		  <h2>QQ:
+			  <a href="" target="_blank" rel="nofollow" data-toggle="tooltip" data-placement="bottom" title=""  data-original-title="QQ:"></a>
+		  </h2>
+		  <h2>Email:
+		  <a href="#" target="_blank" data-toggle="tooltip" rel="nofollow" data-placement="bottom" title=""  data-original-title="#"></a></h2>
+	  </div>
+	</div>
+  </div>
+  <div class="widget widget_search">
+	  <div class="input-group">
+		<input type="text" name="keyword" id="keyword" class="form-control" size="35" placeholder="请输入关键字" maxlength="15" autocomplete="off">
+		<span class="input-group-btn">
+		<button class="btn btn-default btn-search" name="search" type="button" id="search">搜索</button>
+		</span> </div>
+  </div>
+</div>
+<div class="widget widget_hot">
+	  <h3>最新评论文章</h3>
+	  <ul id="getBlogByComm">            
+			<li><a title="用DTcms做一个独立博客网站（响应式模板）" href="#" ><span class="thumbnail">
+				<img class="thumb" data-original="images/201610181739277776.jpg" src="images/201610181739277776.jpg" alt="用DTcms做一个独立博客网站（响应式模板）"  style="display: block;">
+			</span><span class="text">用DTcms做一个独立博客网站（响应式模板）</span><span class="muted"><i class="glyphicon glyphicon-time"></i>
+				2016-11-01
+			</span><span class="muted"><i class="glyphicon glyphicon-eye-open"></i>88</span></a></li>
+			<li><a title="用DTcms做一个独立博客网站（响应式模板）" href="#" ><span class="thumbnail">
+				<img class="thumb" data-original="images/201610181739277776.jpg" src="images/201610181739277776.jpg" alt="用DTcms做一个独立博客网站（响应式模板）"  style="display: block;">
+			</span><span class="text">用DTcms做一个独立博客网站（响应式模板）</span><span class="muted"><i class="glyphicon glyphicon-time"></i>
+				2016-11-01
+			</span><span class="muted"><i class="glyphicon glyphicon-eye-open"></i>88</span></a></li>
+			<li><a title="用DTcms做一个独立博客网站（响应式模板）" href="#" ><span class="thumbnail">
+				<img class="thumb" data-original="images/201610181739277776.jpg" src="images/201610181739277776.jpg" alt="用DTcms做一个独立博客网站（响应式模板）"  style="display: block;">
+			</span><span class="text">用DTcms做一个独立博客网站（响应式模板）</span><span class="muted"><i class="glyphicon glyphicon-time"></i>
+				2016-11-01
+			</span><span class="muted"><i class="glyphicon glyphicon-eye-open"></i>88</span></a></li>
+			<li><a title="用DTcms做一个独立博客网站（响应式模板）" href="#" ><span class="thumbnail">
+				<img class="thumb" data-original="images/201610181739277776.jpg" src="images/201610181739277776.jpg" alt="用DTcms做一个独立博客网站（响应式模板）"  style="display: block;">
+			</span><span class="text">用DTcms做一个独立博客网站（响应式模板）</span><span class="muted"><i class="glyphicon glyphicon-time"></i>
+				2016-11-01
+			</span><span class="muted"><i class="glyphicon glyphicon-eye-open"></i>88</span></a></li>
+			<li><a title="用DTcms做一个独立博客网站（响应式模板）" href="#" ><span class="thumbnail">
+				<img class="thumb" data-original="images/201610181739277776.jpg" src="images/201610181739277776.jpg" alt="用DTcms做一个独立博客网站（响应式模板）"  style="display: block;">
+			</span><span class="text">用DTcms做一个独立博客网站（响应式模板）</span><span class="muted"><i class="glyphicon glyphicon-time"></i>
+				2016-11-01
+			</span><span class="muted"><i class="glyphicon glyphicon-eye-open"></i>88</span></a></li>
+			<li><a title="用DTcms做一个独立博客网站（响应式模板）" href="#" ><span class="thumbnail">
+				<img class="thumb" data-original="images/201610181739277776.jpg" src="images/201610181739277776.jpg" alt="用DTcms做一个独立博客网站（响应式模板）"  style="display: block;">
+			</span><span class="text">用DTcms做一个独立博客网站（响应式模板）</span><span class="muted"><i class="glyphicon glyphicon-time"></i>
+				2016-11-01
+			</span><span class="muted"><i class="glyphicon glyphicon-eye-open"></i>88</span></a></li>
+			<li><a title="用DTcms做一个独立博客网站（响应式模板）" href="#" ><span class="thumbnail">
+				<img class="thumb" data-original="images/201610181739277776.jpg" src="images/201610181739277776.jpg" alt="用DTcms做一个独立博客网站（响应式模板）"  style="display: block;">
+			</span><span class="text">用DTcms做一个独立博客网站（响应式模板）</span><span class="muted"><i class="glyphicon glyphicon-time"></i>
+				2016-11-01
+			</span><span class="muted"><i class="glyphicon glyphicon-eye-open"></i>88</span></a></li>
+			<li><a title="用DTcms做一个独立博客网站（响应式模板）" href="#" ><span class="thumbnail">
+				<img class="thumb" data-original="images/201610181739277776.jpg" src="images/201610181739277776.jpg" alt="用DTcms做一个独立博客网站（响应式模板）"  style="display: block;">
+			</span><span class="text">用DTcms做一个独立博客网站（响应式模板）</span><span class="muted"><i class="glyphicon glyphicon-time"></i>
+				2016-11-01
+			</span><span class="muted"><i class="glyphicon glyphicon-eye-open"></i>88</span></a></li>
+
+	  </ul>
+ </div>
+<div class="widget widget_sentence">
+  <h3>友情链接</h3>
+  <div class="widget-sentence-link">
+	<a href="https://www.csdn.net/" title="网站建设" target="_blank" >CSDN</a>&nbsp;&nbsp;&nbsp;
+  </div>
+</div>
+</aside>
+</section>
+<footer class="footer">
+<div class="container">
+<p>Copyright &copy; 2018.Company name All rights reserved.More Templates <a href="#" target="_blank" title="木庄博客">木庄博客</a> - Collect from <a href="#" title="木庄博客" target="_blank">木庄博客</a></p>
+</div>
+<div id="gotop"><a class="gotop"></a></div>
+</footer>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/jquery.ias.js"></script>
+<script src="js/scripts.js"></script>
+</body>
+</html>

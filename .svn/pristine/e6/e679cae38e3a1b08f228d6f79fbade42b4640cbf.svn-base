@@ -1,0 +1,181 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>登录</title>
+    <script type="text/javascript" th:src="@{/js/jquery-1.11.1.min.js}"></script>
+	<script th:src="@{/js/jquery-2.1.4.min.js}"></script>
+    <link rel="stylesheet" href="../frame/layui/css/layui.css">
+    <link rel="stylesheet" href="../frame/static/css/style.css">
+    <link rel="icon" href="../frame/static/image/code.png">
+    <script type="text/javascript">
+    var countdown = 60;
+	$(function(){
+		var ts=0;
+		$("#users_phone").blur(function(){
+			var tel=$("#users_phone").val();
+			var str=/^1[34578]\d{9}$/;
+			if(str.test(tel)==false){
+				$("#phone").text("请输入正确的手机号码");
+			}else{
+				$("#phone").text("");
+				$.ajax({
+					dataType : 'json',
+					url : 'phoneOnly',
+					data:{
+						tel:tel
+					},
+					success : function(msg) {
+						var v = JSON.parse(msg);
+						if(v==1){
+							$("#phone").text("手机号码不能为空");
+						}else if(v==2){
+							$("#phone").text("手机号码不存在");
+						}else if(v==0){
+							ts=1;
+							$("#phone").text("");
+						}
+					},
+					error : function() {
+						alert("查询失败");
+					}		
+				});
+			}
+		});
+		
+		$("#sub").click(function(){
+			var tel=$("#users_phone").val();
+			var str=/^1[34578]\d{9}$/;
+			if(ts==1&&str.test(tel)==true){
+				if($("#ver").val()==$("#phoneMsg").val()){
+					return true;
+				}
+				alert("验证码不正确");
+				return false;
+			}else if(ts==1&&str.test(tel)==false){
+				alert("请输入正确的手机号码");
+				return false;
+			}else if(ts==0&&str.test(tel)==true){
+				alert("手机号码不正确或不存在");
+				return false;
+			}else{
+				alert("请输入手机号码");
+				return false;
+			}
+		});
+	});
+    function isNull(val){
+		var tel=$("#users_phone").val();
+		var str=/^1[34578]\d{9}$/;
+		if(str.test(tel)==true){
+			ajax(val);
+			return;
+		}
+		$("#phone").text("请输入正确的手机号码");
+	}
+	function settime(val) {
+		if (countdown == 0) {
+			val.removeAttribute("disabled");
+			val.value = "免费获取验证码";
+			countdown = 60;
+		} else {
+			val.setAttribute("disabled", true);
+			val.value = "重新发送(" + countdown + ")";
+			countdown--;
+		}
+		setTimeout(function() {
+			settime(val);
+		}, 1000);
+	}
+	function ajax(val){
+		var tel=$("#users_phone").val();
+		settime(val);
+		$.ajax({
+			dataType : 'json',
+			url : 'phoneMsg',
+			data:{
+				tel:tel
+			},
+			success : function(msg) {
+				var v = JSON.parse(msg);
+				$("#ver").val(v);
+			},
+			error : function() {
+				alert("查询失败");
+			}
+		});
+	}
+    </script>
+</head>
+<body class="login-body body">
+
+<div class="login-box">
+    <form class="layui-form layui-form-pane" method="post" action="phoneAdmin">
+        <div class="layui-form-item">
+            <h3>手机号码登录</h3>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号：</label>
+
+            <div class="layui-input-inline">
+                <input type="text" id="users_phone" name="users_phone" class="layui-input" lay-verify="account" placeholder="手机号"
+                       autocomplete="on" maxlength="20"/>
+            	<span id="phone" style="color:red;"></span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">验证码：</label>
+
+            <div class="layui-input-inline">
+                <input type="number" id="phoneMsg" name="phoneMsg" class="layui-input" lay-verify="code" placeholder="验证码" maxlength="6"/>
+                <input type="button" onclick="isNull(this)"  style="width:47%;" value="验证登录" class="layui-btn">
+            	<input type="hidden" class="form-control" id="ver">
+            	<span id="phonemsg" style="color:red;"></span>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <a href="adminLog"><span class="layui-btn layui-btn-danger btn-reset">返回</span></a>
+            <button type="submit" id="sub" class="layui-btn btn-submit" lay-submit="" lay-filter="sub">立即登录</button>
+        	<br><span th:text="${forgotMsg}? ${forgotMsg}" style="color:red;"></span>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript" src="../frame/layui/layui.js"></script>
+<script type="text/javascript">
+    layui.use(['form', 'layer'], function () {
+
+        // 操作对象
+        var form = layui.form
+                , layer = layui.layer
+                , $ = layui.jquery;
+
+        // 验证
+        form.verify({
+            account: function (value) {
+                if (value == "") {
+                    return "请输入用户名";
+                }
+            },
+            password: function (value) {
+                if (value == "") {
+                    return "请输入密码";
+                }
+            },
+            code: function (value) {
+                if (value == "") {
+                    return "请输入验证码";
+                }
+            }
+        });
+
+        // 提交监听
+
+        // you code ...
+    })
+
+</script>
+</body>
+</html>

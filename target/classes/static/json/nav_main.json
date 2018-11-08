@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "text": "用户管理",
+      "icon": "&#xe638;",
+      "href": "/usersList"
+    },{
+      "text": "文章管理",
+      "icon": "&#xe638;",
+      "href": "/blogList"
+    },{
+      "text": "分类管理",
+      "icon": "&#xe638;",
+      "href": "/typeList"
+    },{
+      "text": "评论管理",
+      "icon": "&#xe638;",
+      "href": "/commentList"
+    }
+  ]
+}

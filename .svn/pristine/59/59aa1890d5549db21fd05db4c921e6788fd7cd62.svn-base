@@ -1,0 +1,7 @@
+package com.ambow.dao;
+
+import com.ambow.javabean.Goods;
+
+public interface GoodsMapper {
+    Goods getGoods(int gds_id);
+}
